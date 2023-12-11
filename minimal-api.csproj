@@ -15,8 +15,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="nginx\" />
+    <None Remove="Services\" />
+    <None Remove="Interfaces\" />
+    <None Remove="Models\" />
+    <None Remove="Endpoints\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="nginx\" />
+    <Folder Include="Services\" />
+    <Folder Include="Interfaces\" />
+    <Folder Include="Models\" />
+    <Folder Include="Endpoints\" />
   </ItemGroup>
 </Project>

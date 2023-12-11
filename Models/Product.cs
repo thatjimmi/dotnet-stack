@@ -1,5 +1,4 @@
-﻿using System;
-namespace Application
+﻿namespace Models
 {
     public class Product
     {

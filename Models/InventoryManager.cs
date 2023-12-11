@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Application
+﻿namespace Models
 {
     public class InventoryManager
     {
         private List<Product> products = new List<Product>();
-
+        
         public void AddProduct(Product product)
         {
             products.Add(product);
@@ -29,4 +26,3 @@ namespace Application
     }
 
 }
-
