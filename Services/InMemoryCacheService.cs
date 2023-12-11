@@ -6,15 +6,16 @@ public class InMemoryCacheService : ICacheService
 {
     private readonly ConcurrentDictionary<string, (object Value, DateTime Expiration)> _cache = new ConcurrentDictionary<string, (object, DateTime)>();
 
-    public async Task AddToCacheAsync(string key, object value, TimeSpan? expiration = null)
+    public Task AddToCacheAsync(string key, object value, TimeSpan? expiration = null)
     {
         var expirationTime = DateTime.UtcNow.Add(expiration ?? TimeSpan.FromMinutes(1));
         _cache[key] = (value, expirationTime);
         Console.WriteLine($"Added to cache: {key}");
-        await Task.CompletedTask; // Simulate async work
+
+        return Task.CompletedTask;
     }
 
-    public async Task<T?> GetFromCacheAsync<T>(string key)
+    public Task<T?> GetFromCacheAsync<T>(string key)
     {
         Console.WriteLine($"Attempting to retrieve key: {key}");
 
@@ -23,7 +24,7 @@ public class InMemoryCacheService : ICacheService
             if (DateTime.UtcNow <= cacheEntry.Expiration)
             {
                 Console.WriteLine($"Cache hit: {key}, Type: {typeof(T)}");
-                return (T)cacheEntry.Value;
+                return Task.FromResult((T?)cacheEntry.Value);
             }
             else
             {
@@ -36,6 +37,6 @@ public class InMemoryCacheService : ICacheService
             Console.WriteLine($"Cache miss: {key}");
         }
 
-        return default;
+        return Task.FromResult<T?>(default);
     }
 }

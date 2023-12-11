@@ -1,6 +1,0 @@
-﻿<Properties StartupConfiguration="{0AB26729-6AA8-4441-A31D-70C4D78B7052}|https">
-  <MonoDevelop.Ide.ItemProperties.projekt2 PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MonoDevelop.Ide.ItemProperties.nginx FirstBuild="True" />
-  <MonoDevelop.Ide.ItemProperties.minimal-api PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MultiItemStartupConfigurations />
-</Properties>

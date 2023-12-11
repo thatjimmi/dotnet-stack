@@ -36,6 +36,14 @@
  * 
  * Flexability:
  * Kan nemt skifte cachingmekanisme ud.
+ * 
+ * 
+ * Asynkron Programmering:
+ * Asynkron programmering i C# er særligt nyttig i situationer, 
+ * hvor du har operationer, der kan tage tid at fuldføre, 
+ * og du ikke ønsker at blokere den tråd, der kører operationen.
+ * 
+ * 
  */
 
 using Models;
@@ -109,6 +117,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Tilføjelse af Produktendpoints
 ProductEndpoints.Map(app);
 
 /*

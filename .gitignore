@@ -44,6 +44,9 @@ x64/
 *.svclog
 *.scc
 
+# Visual Studio 2015/2017 cache/options directory
+.vs/
+
 # Visual C++ cache files
 ipch/
 *.aps
