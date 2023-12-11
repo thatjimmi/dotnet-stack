@@ -7,10 +7,13 @@ public static class ProductEndpoints
 {    
     public static void Map(WebApplication app)
     {
-        app.MapGet("/products/{id}", async (int id, InventoryManager inventoryManager, ICacheService cacheService) =>
+        app.MapGet("/products/{id}", async (
+            int id,
+            InventoryManager inventoryManager,
+            ICacheService cacheService) =>
         {            
             string cacheKey = $"product_{id}";
-            var cachedProduct = await cacheService.GetCacheAsync<Product>(cacheKey);
+            var cachedProduct = await cacheService.GetFromCacheAsync<Product>(cacheKey);
 
             if (cachedProduct != null)
             {
@@ -29,7 +32,7 @@ public static class ProductEndpoints
                 return Results.NotFound();
             }
 
-            await cacheService.SetCacheAsync(cacheKey, product, TimeSpan.FromSeconds(5));
+            await cacheService.AddToCacheAsync(cacheKey, product, TimeSpan.FromSeconds(10));
 
             Console.WriteLine("Data er nu opbevaret i cachen.");
             return Results.Ok(product);

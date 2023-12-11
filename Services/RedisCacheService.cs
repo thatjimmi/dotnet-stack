@@ -16,16 +16,22 @@ using Interfaces;
 namespace Services
 
 {
-	public class RedisService : ICacheService
+	public class RedisCacheService : ICacheService
 	{
 		private readonly IDistributedCache _cache;
-		
-		public RedisService(IDistributedCache cache)
+
+        /*
+		 * Dependency Injection:
+		 * The constructor takes IDistributedCache as a dependency, 
+		 * which is an abstraction over distributed cache stores like Redis. 
+		 * This allows for loose coupling. 
+		*/
+        public RedisCacheService(IDistributedCache cache)
 		{
 			_cache = cache;
 		}
 
-		public async Task SetCacheAsync(string key, object value, TimeSpan? expiration = null)
+		public async Task AddToCacheAsync(string key, object value, TimeSpan? expiration = null)
 		{
 			var options = new DistributedCacheEntryOptions
 			{
@@ -36,7 +42,7 @@ namespace Services
 			await _cache.SetStringAsync(key, jsonData, options);
 		}
 
-		public async Task<T?> GetCacheAsync<T>(string key)
+		public async Task<T?> GetFromCacheAsync<T>(string key)
 		{
 			var jsonData = await _cache.GetStringAsync(key);
 

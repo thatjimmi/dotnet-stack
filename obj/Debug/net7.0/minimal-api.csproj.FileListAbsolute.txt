@@ -35,3 +35,7 @@
 /Users/Jimmi/minimal-api/obj/Debug/net7.0/minimal-api.csproj.CopyComplete
 /Users/Jimmi/minimal-api/bin/Debug/net7.0/Microsoft.OpenApi.dll
 /Users/Jimmi/minimal-api/bin/Debug/net7.0/Swashbuckle.AspNetCore.Swagger.dll
+/Users/Jimmi/minimal-api/bin/Debug/net7.0/Microsoft.AspNetCore.OpenApi.dll
+/Users/Jimmi/minimal-api/obj/Debug/net7.0/minimal-api.MvcApplicationPartsAssemblyInfo.cs
+/Users/Jimmi/minimal-api/bin/Debug/net7.0/Swashbuckle.AspNetCore.SwaggerGen.dll
+/Users/Jimmi/minimal-api/bin/Debug/net7.0/Swashbuckle.AspNetCore.SwaggerUI.dll

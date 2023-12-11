@@ -2,7 +2,7 @@
 {
     public class InventoryManager
     {
-        private List<Product> products = new List<Product>();
+        private readonly List<Product> products = new List<Product>();
         
         public void AddProduct(Product product)
         {
