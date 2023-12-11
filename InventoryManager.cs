@@ -22,7 +22,7 @@ namespace Application
             return string.Join("\n", products.Select(p => p.GetDetails()));
         }
 
-        public Product GetProductById(int id)
+        public Product? GetProductById(int id)
         {
             return products.FirstOrDefault(p => p.ProductID == id);
         }

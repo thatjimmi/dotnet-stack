@@ -4,13 +4,22 @@
  * da hver anmodning kan håndterings af enhver instans af applikationen.
  * 
  * Cache: 
- * Redis distribueret cache
+ * Redis distribueret cache, så de er tilgængelige på tværs af alle instanser
  * docker run -d --name redis-cache -p 6379:6379 redis
  * 
  * Load balancing:
  * Man kan køre flere instanser på forskellige porte 
  * og bruge en simpel load balancer til
- * at       distribuere anmodninger til de forskellige porte
+ * at distribuere anmodninger til de forskellige porte
+ * 
+ * NGINX:
+ * cd nginx && docker-compose up --build
+ *
+ *
+ * Centraliseret Logging: Sørg for, at din applikation
+ * kan logge til en centraliseret logningsløsning, 
+ * så du kan aggregere og analysere logs fra alle instanser.
+ *
  * 
  */
 
@@ -31,6 +40,12 @@ var app = builder.Build();
 var inventoryManager = new InventoryManager();
 inventoryManager.AddProduct(new Product(101, "Tastatur", 125.50, 10));
 inventoryManager.AddProduct(new Product(102, "Mus", 80.00, 15));
+
+
+app.MapGet("/", () =>
+{
+    return Results.Ok("HEads");
+});
 
 app.MapGet("/product/{id}", async (int id, IDistributedCache cache) =>
 {

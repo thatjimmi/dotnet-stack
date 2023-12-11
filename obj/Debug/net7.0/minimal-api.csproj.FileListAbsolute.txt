@@ -33,3 +33,5 @@
 /Users/Jimmi/minimal-api/bin/Debug/net7.0/Pipelines.Sockets.Unofficial.dll
 /Users/Jimmi/minimal-api/bin/Debug/net7.0/StackExchange.Redis.dll
 /Users/Jimmi/minimal-api/obj/Debug/net7.0/minimal-api.csproj.CopyComplete
+/Users/Jimmi/minimal-api/bin/Debug/net7.0/Microsoft.OpenApi.dll
+/Users/Jimmi/minimal-api/bin/Debug/net7.0/Swashbuckle.AspNetCore.Swagger.dll

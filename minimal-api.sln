@@ -5,6 +5,10 @@ VisualStudioVersion = 25.0.1706.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "minimal-api", "minimal-api.csproj", "{0AB26729-6AA8-4441-A31D-70C4D78B7052}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "projekt2", "..\projekt2\projekt2.csproj", "{21C45AB8-4652-407E-A9A8-C66D562BEDCA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nginx", "..\nginx\nginx.csproj", "{0B658F6C-0DBE-4F6F-93A1-48EADF62360C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{0AB26729-6AA8-4441-A31D-70C4D78B7052}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AB26729-6AA8-4441-A31D-70C4D78B7052}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AB26729-6AA8-4441-A31D-70C4D78B7052}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21C45AB8-4652-407E-A9A8-C66D562BEDCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21C45AB8-4652-407E-A9A8-C66D562BEDCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21C45AB8-4652-407E-A9A8-C66D562BEDCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21C45AB8-4652-407E-A9A8-C66D562BEDCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B658F6C-0DBE-4F6F-93A1-48EADF62360C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B658F6C-0DBE-4F6F-93A1-48EADF62360C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B658F6C-0DBE-4F6F-93A1-48EADF62360C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B658F6C-0DBE-4F6F-93A1-48EADF62360C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
