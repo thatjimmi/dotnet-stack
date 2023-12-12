@@ -32,6 +32,10 @@
  * 
  * 
  * Dependency Injection:
+ * By applying DI, you gain the following advantages:
+ * Decoupling: Your classes are not directly dependent on concrete implementations of their dependencies, making the system more modular.
+ * Easier Testing: You can easily mock or replace dependencies like ShopContext when writing unit tests.
+ * Managed Lifecycle: The DI container takes care of the lifecycle of the dependencies, which is especially important for resources like database contexts.
  * Hvordan kan det ses her?
  * 
  * Flexability:
@@ -45,11 +49,11 @@
  * 
  * 
  */
-
-using Models;
+using Microsoft.EntityFrameworkCore;
 using Services;
 using Interfaces;
 using Endpoints;
+using Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,6 +78,23 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = "localhost:6379";
     options.InstanceName = "RedisInstance";
 });
+
+
+/* Entity Framework
+ * 
+ * Brug EF Core migrations til at oprette din database. 
+ * Først, generer en migration baseret på dine modeller:
+ * dotnet ef migrations add InitialCreate
+ * 
+ * Derefter anvender du migrationen for at oprette eller opdatere databasen:
+ * dotnet ef database update
+ * 
+ * Dette vil oprette myapp.db SQLite-filen i dit projekt (eller i den output-mappe, hvor din applikation kører), 
+ * og anvende den definerede schema-struktur baseret på dine modeller.
+*/
+
+builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("SQLiteDatabase")));
 
 /*
  * The difference between AddScoped and AddSingleton in ASP.NET Core's dependency injection (DI)
@@ -101,13 +122,6 @@ builder.Services.AddSingleton<ICacheService, InMemoryCacheService>();
 
 // Brug af RedisService
 //builder.Services.AddSingleton<ICacheService, RedisCacheService>();
-
-// Initialiser InventoryManager og tilføjer Seed Data
-var inventoryManager = new InventoryManager();
-inventoryManager.AddProduct(new Product(101, "Tastatur", 125.50, 10));
-inventoryManager.AddProduct(new Product(102, "Mus", 80.00, 15));
-
-builder.Services.AddSingleton(inventoryManager);
 
 var app = builder.Build();
 
