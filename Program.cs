@@ -53,6 +53,7 @@
  * 
  */
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Services;
 using Interfaces;
 using Endpoints;
@@ -61,7 +62,15 @@ using Data;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {       
+        Version = "v1",
+        Title = "API",
+        Description = "Description"
+    });
+});
 
 /* 
  * This adds and configures the Redis distributed cache implementation to the 
@@ -97,15 +106,15 @@ builder.Services.AddStackExchangeRedisCache(options =>
 */
 
 /* In-Memory "Database" */
-builder.Services.AddSingleton<IDatabaseContext, InMemoryDatabaseContext>();
+//builder.Services.AddSingleton<IDatabaseContext, InMemoryDatabaseContext>();
 
-// SQLite
+/* SQLite Database */
 //builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
 //    options.UseSqlite(builder.Configuration.GetConnectionString("SQLiteDatabase")));
 
-/* Postgres: */
-//builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
-//    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresDatabase")));
+/* Postgres */
+builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresDatabase")));
 
 /*
  * The difference between AddScoped and AddSingleton in ASP.NET Core's dependency injection (DI)

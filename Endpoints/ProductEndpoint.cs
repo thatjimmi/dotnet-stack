@@ -7,9 +7,27 @@ public static class ProductEndpoints
 {    
     public static void Map(WebApplication app)
     {
-        app.MapGet("/products", async (IDatabaseContext context) =>
-        {            
+        app.MapGet("/products", async (IDatabaseContext context, ICacheService cacheService) =>
+        {
+            string cacheKey = "products";
+            var cachedProducts = await cacheService.GetFromCacheAsync<List<Product>>(cacheKey);
+
+            if (cachedProducts != null)
+            {
+                Console.WriteLine("Data hentet fra cachen.");
+                return Results.Ok(cachedProducts);
+            }
+
+            Console.WriteLine("Data ikke fundet i cachen, henter fra datakilde...");
             var products = await context.GetProductsAsync();
+
+            // Tilføjer delay for at simulere at der er en masse arbejde med at hente
+            await Task.Delay(TimeSpan.FromSeconds(3));
+
+            await cacheService.AddToCacheAsync(cacheKey, products, TimeSpan.FromSeconds(10));
+
+            Console.WriteLine("Data er nu opbevaret i cachen.");
+
             return Results.Ok(products);
         });
 
