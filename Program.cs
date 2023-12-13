@@ -21,6 +21,9 @@
  * NGINX:
  * cd nginx && docker-compose up --build
  *
+ * Postgres:
+ * docker run --name mypostgres -e POSTGRES_USER=myuser -e POSTGRES_PASSWORD=mypassword -p 5433:5432 -d postgres
+ * 
  *
  * Centraliseret Logging: Sørg for, at din applikation
  * kan logge til en centraliseret logningsløsning, 
@@ -93,8 +96,16 @@ builder.Services.AddStackExchangeRedisCache(options =>
  * og anvende den definerede schema-struktur baseret på dine modeller.
 */
 
-builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("SQLiteDatabase")));
+/* In-Memory "Database" */
+builder.Services.AddSingleton<IDatabaseContext, InMemoryDatabaseContext>();
+
+// SQLite
+//builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
+//    options.UseSqlite(builder.Configuration.GetConnectionString("SQLiteDatabase")));
+
+/* Postgres: */
+//builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
+//    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresDatabase")));
 
 /*
  * The difference between AddScoped and AddSingleton in ASP.NET Core's dependency injection (DI)
