@@ -18,10 +18,10 @@ public static class ProductEndpoints
                 return Results.Ok(cachedProducts);
             }
 
-            Console.WriteLine("Data ikke fundet i cachen, henter fra datakilde...");
+            Console.WriteLine("Data ikke fundet i cachen, henter fra datakilde...");    
             var products = await context.GetProductsAsync();
 
-            // Tilføjer delay for at simulere at der er en masse arbejde med at hente
+            // Simulerer en langsommere behandling eller et tungt beregningsarbejde
             await Task.Delay(TimeSpan.FromSeconds(3));
 
             await cacheService.AddToCacheAsync(cacheKey, products, TimeSpan.FromSeconds(10));
@@ -49,7 +49,7 @@ public static class ProductEndpoints
             Console.WriteLine("Data ikke fundet i cachen, henter fra datakilde...");
             var product = await context.GetProductByIdAsync(id);
 
-            // Tilføjer delay for at simulere at der er en masse arbejde med at hente
+            // Simulerer en langsommere behandling eller et tungt beregningsarbejde
             await Task.Delay(TimeSpan.FromSeconds(3));
 
             if (product == null)
@@ -65,7 +65,7 @@ public static class ProductEndpoints
 
         });
 
-        app.MapPost("/products", async (ProductDto productDto, IDatabaseContext context) =>
+        app.MapPost("/products", async (ProductDto productDto, IDatabaseContext context, ICacheService cacheService) =>
         {
             var product = new Product
             {
@@ -76,14 +76,21 @@ public static class ProductEndpoints
 
             await context.AddProductAsync(product);
 
+            // Invalider products cache
+            await cacheService.DeleteFromCacheAsync("products");
+
             return Results.Created($"/products/{product.ProductID}", product);
         });
 
-        app.MapDelete("products/{id}", async (int id, IDatabaseContext context) =>
+        app.MapDelete("products/{id}", async (int id, IDatabaseContext context, ICacheService cacheService) =>
         {
             try
             {
                 await context.DeleteProductAsync(id);
+
+                // Delete from cache
+                string cacheKey = $"product_{id}";
+                await cacheService.DeleteFromCacheAsync(cacheKey);                
             }
             catch (KeyNotFoundException)
             {

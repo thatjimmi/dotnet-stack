@@ -39,4 +39,11 @@ public class InMemoryCacheService : ICacheService
 
         return Task.FromResult<T?>(default);
     }
+
+    public Task DeleteFromCacheAsync(string key)
+    {
+        _cache.TryRemove(key, out var _);
+
+        return Task.CompletedTask;
+    }
 }

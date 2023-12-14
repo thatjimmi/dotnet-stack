@@ -43,7 +43,12 @@ namespace Services
 			await _cache.SetStringAsync(key, jsonData, options);
 		}
 
-		public async Task<T?> GetFromCacheAsync<T>(string key)
+        public async Task DeleteFromCacheAsync(string key)
+        {
+			await _cache.RemoveAsync(key);
+        }
+
+        public async Task<T?> GetFromCacheAsync<T>(string key)
 		{
 			var jsonData = await _cache.GetStringAsync(key);
 

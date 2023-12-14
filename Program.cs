@@ -6,12 +6,18 @@
  * 
  * Cache: 
  * Redis distribueret cache, så de er tilgængelige på tværs af alle instanser.
+ * A single Redis instance is not a distributed system. It is a remote centralized store.
+ * 
  * Hvad menes der helt konkret med distrueret cache.
  * docker run -d --name redis-cache -p 6379:6379 redis
  * 
  * Cache Invalidering og Opdatering: Definér en mekanisme for, 
  * hvordan og hvornår cache skal invalideres eller opdateres, 
  * så du sikrer, at dine applikationsinstanser arbejder med aktuelle data.
+ * 
+ *  Cache på Forskellige Lag
+ *  Brug Nginx til at cache statiske ressourcer og enkle, sjældent ændrede API-anmodninger.
+ *  Brug Redis til mere komplekse og dynamisk genererede data, hvor du har brug for finere kontrol og hurtigere adgang.
  * 
  * Load balancing:
  * Man kan køre flere instanser på forskellige porte 
@@ -109,12 +115,12 @@ builder.Services.AddStackExchangeRedisCache(options =>
 //builder.Services.AddSingleton<IDatabaseContext, InMemoryDatabaseContext>();
 
 /* SQLite Database */
-//builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
-//    options.UseSqlite(builder.Configuration.GetConnectionString("SQLiteDatabase")));
+builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("SQLiteDatabase")));
 
 /* Postgres */
-builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresDatabase")));
+//builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
+//    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresDatabase")));
 
 /*
  * The difference between AddScoped and AddSingleton in ASP.NET Core's dependency injection (DI)
@@ -138,12 +144,14 @@ builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
 */
 
 // Brug af InMemoryCacheService
-builder.Services.AddSingleton<ICacheService, InMemoryCacheService>();
+//builder.Services.AddSingleton<ICacheService, InMemoryCacheService>();
 
 // Brug af RedisService
-//builder.Services.AddSingleton<ICacheService, RedisCacheService>();
+builder.Services.AddSingleton<ICacheService, RedisCacheService>();
 
 var app = builder.Build();
+
+app.UseStaticFiles();
 
 if (app.Environment.IsDevelopment())
 {
@@ -162,5 +170,39 @@ ProductEndpoints.Map(app);
 */
 
 app.MapGet("/health", () => "Healthy");
+
+app.MapGet("/", async (HttpContext httpContext) =>
+{
+    await Task.Delay(TimeSpan.FromSeconds(2));
+    httpContext.Response.Headers.CacheControl = "public, max-age=120"; // Tillader caching i 120 sekunder
+
+    return Results.Ok("Projekt 2");
+});
+
+/* Brug http:\//localhost/image?url=https:\//assets.unileversolutions.com/v1/30733653.png */
+app.MapGet("/image", async (HttpContext httpContext) =>
+{
+    // Få URL-parameteren fra query string
+    var url = httpContext.Request.Query["url"].ToString();
+
+    using var httpClient = new HttpClient();
+    var response = await httpClient.GetAsync(url);
+
+    if (!response.IsSuccessStatusCode)
+    {
+        return Results.Problem("Kunne ikke hente billedet.");
+    }
+
+    var imageContent = await response.Content.ReadAsByteArrayAsync();
+
+    //Simulerer en langsommere behandling eller et tungt beregningsarbejde
+    //await Task.Delay(TimeSpan.FromSeconds(2));
+
+    httpContext.Response.Headers.CacheControl = "public, max-age=120"; // Tillader caching i 120 sekunder
+
+    Console.WriteLine("Her får du billedet fra project 2 instans");
+
+    return Results.File(imageContent, response.Content.Headers.ContentType?.ToString());
+});
 
 app.Run();
