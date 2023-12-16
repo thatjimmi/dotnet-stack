@@ -5,6 +5,7 @@ services:
     build: ./
     environment:
       - ConnectionStrings__Database=Host=db;Database=mydb;Username=myuser;Password=mypassword
+      - ConnectionStrings__Redis=redis:6379
     depends_on:
       - db
       - redis 
@@ -15,6 +16,7 @@ services:
     build: ./
     environment:
       - ConnectionStrings__Database=Host=db;Database=mydb;Username=myuser;Password=mypassword
+      - ConnectionStrings__Redis=redis:6379
     depends_on:
       - db
       - redis

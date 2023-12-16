@@ -137,3 +137,7 @@ _NCrunch*
 *.db*
 
 *.DS_Store
+
+Nginx/nginx-cache/*
+
+Logs/*

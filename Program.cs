@@ -93,7 +93,7 @@ builder.Services.AddSwaggerGen(options =>
 */
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = "redis:6379";
+    options.Configuration = builder.Configuration.GetConnectionString("Redis"); 
     options.InstanceName = "RedisInstance";
 });
 
@@ -147,8 +147,21 @@ builder.Services.AddSingleton<ICacheService, RedisCacheService>();
 
 var app = builder.Build();
 
-app.UseStaticFiles();
+// Seeding the database
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var dbContext = services.GetRequiredService<DatabaseContext>();
 
+    // Check if the database is already seeded
+    if (!dbContext.Products.Any())
+    {
+        var seedData = DatabaseContext.GenerateSeedData(10);
+        dbContext.Products.AddRange(seedData);
+        dbContext.SaveChanges();
+    }
+}
+    
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
