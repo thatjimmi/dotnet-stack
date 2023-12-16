@@ -93,7 +93,7 @@ builder.Services.AddSwaggerGen(options =>
 */
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = "localhost:6379";
+    options.Configuration = "redis:6379";
     options.InstanceName = "RedisInstance";
 });
 
@@ -114,13 +114,9 @@ builder.Services.AddStackExchangeRedisCache(options =>
 /* In-Memory "Database" */
 //builder.Services.AddSingleton<IDatabaseContext, InMemoryDatabaseContext>();
 
-/* SQLite Database */
-builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("SQLiteDatabase")));
-
 /* Postgres */
-//builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
-//    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresDatabase")));
+builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("database")));
 
 /*
  * The difference between AddScoped and AddSingleton in ASP.NET Core's dependency injection (DI)
@@ -175,8 +171,8 @@ app.MapGet("/", async (HttpContext httpContext) =>
 {
     await Task.Delay(TimeSpan.FromSeconds(2));
     httpContext.Response.Headers.CacheControl = "public, max-age=120"; // Tillader caching i 120 sekunder
-
-    return Results.Ok("Projekt 2");
+    var db = builder.Configuration.GetConnectionString("Database");
+    return Results.Ok($"Hello! {db}.");
 });
 
 /* Brug http:\//localhost/image?url=https:\//assets.unileversolutions.com/v1/30733653.png */

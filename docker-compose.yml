@@ -1,0 +1,61 @@
+version: '3.8'
+services:
+  
+  app1: 
+    build: ./
+    environment:
+      - ConnectionStrings__Database=Host=db;Database=mydb;Username=myuser;Password=mypassword
+    depends_on:
+      - db
+      - redis 
+    networks:
+      - backend
+  
+  app2: 
+    build: ./
+    environment:
+      - ConnectionStrings__Database=Host=db;Database=mydb;Username=myuser;Password=mypassword
+    depends_on:
+      - db
+      - redis
+    networks:
+      - backend      
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+    volumes:
+      - ./Nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./Nginx/nginx-cache:/path/inside/container
+      - ./Logs:/var/log/nginx/
+    depends_on:
+      - app1
+      - app2
+    networks:
+      - backend
+
+  redis:
+    image: redis:alpine
+    networks:
+      - backend
+    
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=mydb
+    ports:
+      - 5433:5432
+    networks:
+      - backend
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  postgres_data:
