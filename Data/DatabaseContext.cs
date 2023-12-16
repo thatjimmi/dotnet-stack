@@ -10,27 +10,9 @@ public class DatabaseContext : DbContext, IDatabaseContext
 
     public DbSet<Product> Products { get; set; }
 
-    public async Task<Product?> GetProductByIdAsync(int id)
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        return await Products.FindAsync(id);
-    }
-
-    public async Task AddProductAsync(Product product)
-    {
-        await Products.AddAsync(product);
-        await SaveChangesAsync();
-    }
-
-    public async Task<List<Product>> GetProductsAsync()
-    {
-        return await Products.ToListAsync();
-    }
-
-    public async Task DeleteProductAsync(int id)
-    {
-        var product = await Products.FindAsync(id) ?? throw new KeyNotFoundException("Product not found");
-        Products.Remove(product);
-        await SaveChangesAsync();
+        return base.SaveChangesAsync(cancellationToken);
     }
 
     public static List<Product> GenerateSeedData(int numberOfProducts)

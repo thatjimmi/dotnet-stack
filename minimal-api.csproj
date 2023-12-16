@@ -28,6 +28,7 @@
     <None Remove="Endpoints\" />
     <None Remove="Data\" />
     <None Remove="Migrations\" />
+    <None Remove="Decorators\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\" />
@@ -36,5 +37,6 @@
     <Folder Include="Endpoints\" />
     <Folder Include="Data\" />
     <Folder Include="Migrations\" />
+    <Folder Include="Decorators\" />
   </ItemGroup>
 </Project>
