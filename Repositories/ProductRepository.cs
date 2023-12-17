@@ -4,7 +4,7 @@ using Models;
 
 namespace Repositories;
 
-public class ProductRepository : IProductRepository
+public class ProductRepository : IRepository<Product>
 {
     private readonly IDatabaseContext _context;    
 
@@ -40,4 +40,9 @@ public class ProductRepository : IProductRepository
         
         return product;
     }
+
+    public async Task<bool> IsEmpty()
+    {
+        return await _context.Products.CountAsync() == 0;
+    }   
 }

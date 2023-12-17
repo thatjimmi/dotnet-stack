@@ -3,7 +3,7 @@ using Models;
 
 namespace Repositories
 {
-	public class FakeProductRepository : IProductRepository
+	public class FakeProductRepository : IRepository<Product>
 	{
         private List<Product> _products = new List<Product>();
 
@@ -19,7 +19,11 @@ namespace Repositories
 
         public Task DeleteAsync(int id)
         {
-            _products.Remove(_products.FirstOrDefault(p => p.ProductID == id));
+            var productToRemove = _products.FirstOrDefault(p => p.ProductID == id);
+            if (productToRemove != null)
+            {
+                _products.Remove(productToRemove);
+            }
             return Task.CompletedTask;
         }
 
@@ -31,6 +35,11 @@ namespace Repositories
         public async Task<Product?> GetByIdAsync(int id)
         {
             return await Task.FromResult(_products.FirstOrDefault(p => p.ProductID == id));
+        }
+
+        public Task<bool> IsEmpty()
+        {
+            return Task.FromResult(_products.Count == 0);
         }
     }
 }

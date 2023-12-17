@@ -5,9 +5,9 @@ namespace Services
 {
     public class ProductService : IProductService
     {
-        private readonly IProductRepository _repository;
+        private readonly IRepository<Product> _repository;
 
-        public ProductService(IProductRepository repository)
+        public ProductService(IRepository<Product> repository)
         {
             _repository = repository;         
         }

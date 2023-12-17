@@ -4,6 +4,7 @@ using Services;
 using Interfaces;
 using Repositories;
 using Decorators;
+using Models;
 using Endpoints;
 using Data;
 
@@ -20,50 +21,26 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-/* 
- * This adds and configures the Redis distributed cache implementation to the 
- * application's services collection. This allows the application to use 
- * Redis for caching by injecting IDistributedCache into classes, like your RedisService. 
- * 
- * When RedisService is instantiated, it will receive an instance of 
- * IDistributedCache that is configured to use Redis as the backing store, 
- * thanks to the configuration in AddStackExchangeRedisCache.
- * 
- * This configuration sets up Redis as the distributed cache implementation 
- * for your application and ensures that when your RedisService asks for an 
- * IDistributedCache, it gets one that is backed by Redis.
-*/
-
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis"); 
     options.InstanceName = "RedisInstance";
 });
 
-/* Entity Framework
- * 
- * Brug EF Core migrations til at oprette din database. 
- * Først, generer en migration baseret på dine modeller:
- * dotnet ef migrations add InitialCreate
- * 
- * Derefter anvender du migrationen for at oprette eller opdatere databasen:
- * dotnet ef database update
-*/
-
 /* Postgres */
 builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("database")));
 
 /* Brug InMemoryCacheService */
-//builder.Services.AddSingleton<ICacheService, InMemoryCacheService>();
+builder.Services.AddSingleton<ICacheService, InMemoryCacheService>();
 
 /* Brug RedisCacheService */
-builder.Services.AddSingleton<ICacheService, RedisCacheService>();
+//builder.Services.AddSingleton<ICacheService, RedisCacheService>();
 
 /* Registrer ProductService */
 builder.Services.AddScoped<IProductService, ProductService>();
 
-// Register ProductRepository as itself
+// Register ProductRepository
 //builder.Services.AddScoped<ProductRepository>();
 
 // Register FakeProductRepository
@@ -79,11 +56,11 @@ builder.Services.AddSingleton<FakeProductRepository>();
 */
 
 // Register the decorator for IProductRepository
-builder.Services.AddScoped<IProductRepository>(provider =>
+builder.Services.AddScoped<IRepository<Product>>(provider =>
 {
     var baseRepository = provider.GetRequiredService<FakeProductRepository>();
     var cacheService = provider.GetRequiredService<ICacheService>();
-    return new CachingProductRepositoryDecorator(baseRepository, cacheService);
+    return new CachingRepositoryDecorator<Product>(baseRepository, cacheService);
 });
 
 var app = builder.Build();
@@ -92,16 +69,26 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var dbContext = services.GetRequiredService<DatabaseContext>();
-   
-    if (!dbContext.Products.Any())
+    var productRepository = services.GetRequiredService<IRepository<Product>>();
+
+    if (await productRepository.IsEmpty())
     {
-        var seedData = DatabaseContext.GenerateSeedData(10);
-        dbContext.Products.AddRange(seedData);
-        dbContext.SaveChanges();
+        var seedData = IRepository<Product>.GenerateSeedData(10, index =>
+            new Product
+            {
+                Name = Faker.Internet.DomainWord(),
+                Price = Faker.RandomNumber.Next(100, 10000),
+                Quantity = Faker.RandomNumber.Next(1, 100)
+            }
+        );
+
+        foreach (var product in seedData)
+        {
+            await productRepository.AddAsync(product);
+        }
     }
 }
-    
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

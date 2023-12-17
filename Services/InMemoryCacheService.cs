@@ -10,31 +10,22 @@ public class InMemoryCacheService : ICacheService
     {
         var expirationTime = DateTime.UtcNow.Add(expiration ?? TimeSpan.FromMinutes(1));
         _cache[key] = (value, expirationTime);
-        Console.WriteLine($"Added to cache: {key}");
 
         return Task.CompletedTask;
     }
 
     public Task<T?> GetFromCacheAsync<T>(string key)
     {
-        Console.WriteLine($"Attempting to retrieve key: {key}");
-
         if (_cache.TryGetValue(key, out var cacheEntry))
         {
             if (DateTime.UtcNow <= cacheEntry.Expiration)
             {
-                Console.WriteLine($"Cache hit: {key}, Type: {typeof(T)}");
                 return Task.FromResult((T?)cacheEntry.Value);
             }
             else
-            {
-                Console.WriteLine($"Cache expired: {key}");
+            {            
                 _cache.TryRemove(key, out var _);
             }
-        }
-        else
-        {
-            Console.WriteLine($"Cache miss: {key}");
         }
 
         return Task.FromResult<T?>(default);
