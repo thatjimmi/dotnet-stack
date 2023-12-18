@@ -25,7 +25,12 @@ namespace Services
         }
 
         public async Task<Product> AddProductAsync(ProductDto productDto)
-        {
+        {   
+            if (productDto.Quantity < 0)
+            {
+                throw new ArgumentException($"Quantity must be minimum 0.");
+            }
+
             var product = new Product
             {
                 Name = productDto.Name,

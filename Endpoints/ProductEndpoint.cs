@@ -24,10 +24,16 @@ public static class ProductEndpoints
         });
 
         app.MapPost("/products", async (ProductDto productDto, IProductService productService) =>
-        {
-            var product = await productService.AddProductAsync(productDto);                      
-
-            return Results.Created($"/products/{product.ProductID}", product);
+        {   
+            try 
+            {
+                var product = await productService.AddProductAsync(productDto);                      
+                return Results.Created($"/products/{product.ProductID}", product);
+            }
+            catch (ArgumentException e)
+            {
+                return Results.BadRequest(e.Message);
+            }
         });
 
         app.MapDelete("products/{id}", async (int id, IProductService productService) =>

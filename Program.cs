@@ -32,33 +32,24 @@ builder.Services.AddDbContext<IDatabaseContext, DatabaseContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("database")));
 
 /* Brug InMemoryCacheService */
-builder.Services.AddSingleton<ICacheService, InMemoryCacheService>();
+//builder.Services.AddSingleton<ICacheService, InMemoryCacheService>();
 
 /* Brug RedisCacheService */
-//builder.Services.AddSingleton<ICacheService, RedisCacheService>();
+builder.Services.AddSingleton<ICacheService, RedisCacheService>();
 
 /* Registrer ProductService */
 builder.Services.AddScoped<IProductService, ProductService>();
 
 // Register ProductRepository
-//builder.Services.AddScoped<ProductRepository>();
+builder.Services.AddScoped<ProductRepository>();
 
 // Register FakeProductRepository
-builder.Services.AddSingleton<FakeProductRepository>();
-
-/*
- * The part that makes up the Decorator here is the IRepository + CachingRepository +
- * any other class that implements IRepository, 
- * and thus can be wrapped by the CachingRepository. 
- * The idea behind Decorator is that it dynamically adds functionality on top of an object, 
- * and here, that functionality is caching. 
- * 
-*/
+//builder.Services.AddSingleton<FakeProductRepository>();
 
 // Register the decorator for IProductRepository
 builder.Services.AddScoped<IRepository<Product>>(provider =>
 {
-    var baseRepository = provider.GetRequiredService<FakeProductRepository>();
+    var baseRepository = provider.GetRequiredService<ProductRepository>();
     var cacheService = provider.GetRequiredService<ICacheService>();
     return new CachingRepositoryDecorator<Product>(baseRepository, cacheService);
 });
@@ -98,20 +89,11 @@ if (app.Environment.IsDevelopment())
 /* Tilføjelse af Produktendpoints */
 ProductEndpoints.Map(app);
 
-/*
- * Sundhedstjek Endpoint:
- * Dette endpoint kan udvides til at tjekke vitale dele af applikationen, 
- * som for eksempel databaseforbindelser, eksterne afhængigheder, 
- * eller vigtige interne services
-*/
-
-app.MapGet("/health", () => "Healthy");
-
 app.MapGet("/", async (HttpContext httpContext) =>
 {
-    await Task.Delay(TimeSpan.FromSeconds(2));
+    await Task.Delay(TimeSpan.FromSeconds(3));
     httpContext.Response.Headers.CacheControl = "public, max-age=120";
-    var db = builder.Configuration.GetConnectionString("Database");
+
     return Results.Ok($"Hello!");
 });
 
