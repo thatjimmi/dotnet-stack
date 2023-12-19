@@ -1,4 +1,4 @@
-# .Net Stack
+# .NET Stack
 
 ## Overview
 
