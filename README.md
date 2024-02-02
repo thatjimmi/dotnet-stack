@@ -23,7 +23,7 @@
 To get started with `dotnet-stack`, clone this repository to your local machine.
 
 ```sh
-git clone https://github.com/yourusername/dotnet-stack.git
+git clone https://github.com/thatjimmi/dotnet-stack.git
 cd dotnet-stack
 ```
 
